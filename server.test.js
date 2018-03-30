@@ -87,8 +87,12 @@ describe('Games', () => {
     it('should return all games in the database', async function() {
       const res = await Promise.resolve(chai.request(server).get('/api/game/get')).catch(err => console.error(err));
       expect(res.status).to.equal(200);
-      expect(Array.isArray(res.body)).to.equal(true);
       expect(res.body.length).to.equal(1);
+    });
+
+    it('should return an array', async function() {
+      const res = await Promise.resolve(chai.request(server).get('/api/game/get')).catch(err => console.error(err));
+      expect(Array.isArray(res.body)).to.equal(true);
     });
   });
 
@@ -131,14 +135,14 @@ describe('Games', () => {
       const res = await Promise.resolve(chai.request(server).delete(`/api/game/destroy/${gameId}`)).catch(err => console.error(err));
 
       expect(res.text).to.equal('{"success":"Mega Man was removed from the DB"}');
-      // Game.findById(gameId, (err, deletedGame) => {
-      //   if (err) {
-      //     console.log(err);
-      //     return done();
-      //   }
-      //   expect(deletedGame).to.equal(null);
-      //   done();
-      // });
+      const deletedGame = await Promise.resolve(Game.findById(gameId)).catch(err => console.error(err));
+      expect(deletedGame).to.equal(null);
+    });
+
+    it('should return HTTP status 422 when an invalid ID is provided', async function() {
+      const res = await Promise.resolve(chai.request(server).delete(`/api/game/destroy/I_am_an_invalid_ID`)).catch(err => {
+        return expect(err.status).to.equal(422)
+      });
     });
   });
 });
