@@ -32,7 +32,7 @@ describe('Games', () => {
 
   let gameId;
 
-  beforeEach(async function(){
+  beforeEach(async function() {
     let newGame = await Promise.resolve(
       new Game({
         title: 'Mega Man',
