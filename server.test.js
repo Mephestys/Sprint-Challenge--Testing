@@ -59,43 +59,30 @@ describe('Games', () => {
   });
 
   describe('[POST] /api/game/create', () => {
-    it('should add a new game', (done) => {
+    it('should add a new game', async function() {
       const game = {
         title: 'Contra',
         releaseDate: 'February 20, 1987',
         genre: 'Run and gun'
       };
 
-      chai.request(server)
-        .post('/api/game/create')
-        .send(game)
-        .end((err, res) => {
-          if (err) {
-            console.log(err);
-            return done();
-          }
-          expect(res.status).to.equal(200);
-          expect(res.body.title).to.equal('Contra');
-          done();
-        });
+      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game));
+      expect(res.status).to.equal(200);
+      expect(res.body.title).to.equal('Contra');
     });
 
-    it('should return HTTP status 422 when failing to save to the database', (done) => {
+    it('should return HTTP status 422 when failing to save to the database', async function() {
       const game = {
         title: 'Contra',
         releaseDate: 'February 20, 1987',
       };
 
-      chai.request(server)
-        .post('/api/game/create')
-        .send(game)
-        .end((err, res) => {
-          if (err) {
-            return done();
-          }
-          expect(res.status).to.equal(422);
-          done();
-        });
+      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game));
+      if (res.status === 422) {
+        Promise.reject('because')
+      }
+      expect(res.status).to.equal(422);
+      console.log(res);
     });
   });
 
