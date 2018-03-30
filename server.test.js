@@ -84,95 +84,61 @@ describe('Games', () => {
   });
 
   describe('[GET] /api/game/get', () => {
-    it('should return all games in the database', (done) => {
-      chai.request(server)
-        .get('/api/game/get')
-        .end((err, res) => {
-          if (err) {
-            console.log(err);
-            return done();
-          }
-          expect(res.status).to.equal(200);
-          expect(Array.isArray(res.body)).to.equal(true);
-          expect(res.body.length).to.equal(1);
-          done();
-        });
+    it('should return all games in the database', async function() {
+      const res = await Promise.resolve(chai.request(server).get('/api/game/get')).catch(err => console.error(err));
+      expect(res.status).to.equal(200);
+      expect(Array.isArray(res.body)).to.equal(true);
+      expect(res.body.length).to.equal(1);
     });
   });
 
   describe('[PUT] /api/game/update', () => {
-    it('should update a game document in the database', (done) => {
+    it('should update a game document in the database', async function() {
       const update = {
         id: gameId,
         title: 'Castlevania'
       };
-      chai.request(server)
-        .put('/api/game/update')
-        .send(update)
-        .end((err, res) => {
-          if (err) {
-            console.log(err);
-            return done();
-          }
-          expect(res.body.title).to.equal('Castlevania');
-          done();
-        });
+
+      const res = await Promise.resolve(chai.request(server).put('/api/game/update').send(update)).catch(err => console.error(err));
+      expect(res.body.title).to.equal('Castlevania');
     });
 
-    it('should return HTTP status 422 when no title is provided', (done) => {
+    it('should return HTTP status 422 when no title is provided', async function() {
       const update = {
         id: gameId,
       };
-      chai.request(server)
-        .put('/api/game/update')
-        .send(update)
-        .end((err, res) => {
-          if (err) {
-            return done();
-          }
-          expect(res.status).to.equal(422);
-          done();
-        });
+
+      const res = await Promise.resolve(chai.request(server).put('/api/game/update').send(update)).catch(err => {
+        return expect(err.status).to.equal(422);
+      }); 
     });
 
-    it('should return HTTP status 422 when an invalid ID is provided', (done) => {
+    it('should return HTTP status 422 when no title is provided', async function() {
       const update = {
-        id: 8385913296527396,
+        id: 1234567890,
         title: 'Castlevania'
       };
-      chai.request(server)
-        .put('/api/game/update')
-        .send(update)
-        .end((err, res) => {
-          if (err) {
-            return done();
-          }
-          expect(res.status).to.equal(422);
-          done();
-        });
-    })
+
+      const res = await Promise.resolve(chai.request(server).put('/api/game/update').send(update)).catch(err => {
+        return expect(err.status).to.equal(422);
+      }); 
+    });
   });
 
   // --- Stretch Problem ---
   describe('[DELETE] /api/game/destroy/:id', () => {
-    it('should remove the specified game from the database', (done) => {
-      chai.request(server)
-        .delete(`/api/game/destroy/${gameId}`)
-        .end((err, res) => {
-          if (err) {
-            console.log(err);
-            return done();
-          }
-          expect(res.text).to.equal('{"success":"Mega Man was removed from the DB"}');
-          Game.findById(gameId, (err, deletedGame) => {
-            if (err) {
-              console.log(err);
-              return done();
-            }
-            expect(deletedGame).to.equal(null);
-            done();
-          });
-        });
+    it('should remove the specified game from the database', async function() {
+      const res = await Promise.resolve(chai.request(server).delete(`/api/game/destroy/${gameId}`)).catch(err => console.error(err));
+
+      expect(res.text).to.equal('{"success":"Mega Man was removed from the DB"}');
+      // Game.findById(gameId, (err, deletedGame) => {
+      //   if (err) {
+      //     console.log(err);
+      //     return done();
+      //   }
+      //   expect(deletedGame).to.equal(null);
+      //   done();
+      // });
     });
   });
 });
