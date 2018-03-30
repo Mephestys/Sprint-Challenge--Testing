@@ -66,7 +66,7 @@ describe('Games', () => {
         genre: 'Run and gun'
       };
 
-      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game));
+      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game)).catch(err => console.error(err));
       expect(res.status).to.equal(200);
       expect(res.body.title).to.equal('Contra');
     });
@@ -77,12 +77,9 @@ describe('Games', () => {
         releaseDate: 'February 20, 1987',
       };
 
-      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game));
-      if (res.status === 422) {
-        Promise.reject('because')
-      }
-      expect(res.status).to.equal(422);
-      console.log(res);
+      const res = await Promise.resolve(chai.request(server).post('/api/game/create').send(game)).catch(err => {
+        return expect(err.status).to.equal(422);
+      }); 
     });
   });
 
