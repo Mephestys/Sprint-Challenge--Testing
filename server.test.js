@@ -32,29 +32,24 @@ describe('Games', () => {
 
   let gameId;
 
-  beforeEach((done) => {
-    new Game({
-      title: 'Mega Man',
-      releaseDate: 'December 17, 1987',
-      genre: 'Action Platformer'
-    }).save((err, savedGame) => {
-      if (err) {
-        console.log(err);
-        return done();
-      }
-      gameId = savedGame.id;
-      done();
+  beforeEach(async function(){
+    let newGame = await Promise.resolve(
+      new Game({
+        title: 'Mega Man',
+        releaseDate: 'December 17, 1987',
+        genre: 'Action Platformer'
+    }).save()).catch(err => {
+      return console.error(err);
     });
+      return gameId = newGame.id;
   });
 
-  afterEach((done) => {
-    Game.remove({}, (err) => {
+  afterEach(async function() {
+    await Game.remove({}, (err) => {
       if (err) {
-        console.log(err);
-        return done();
+        return console.log(err);
       };
-      mongoose.connection.db.dropDatabase();
-      done();
+      return mongoose.connection.db.dropDatabase();
     });
   });
 
